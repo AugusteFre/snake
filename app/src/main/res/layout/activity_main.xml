@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
+
 
     <TextView
         android:id="@+id/gravityValues"
@@ -35,13 +37,47 @@
         android:rotation="-90"
         tools:ignore="MissingConstraints"
         android:adjustViewBounds="true"
-        android:maxWidth="75dp"
-        android:maxHeight="75dp"
+        android:maxWidth="50dp"
+        android:maxHeight="50dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageSegment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:maxWidth="30dp"
+        android:maxHeight="30dp"
+        android:rotation="-90"
+        android:scaleType="fitCenter"
+        android:src="@drawable/snake_segment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageSnake"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:id="@+id/imageSnakeTail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:maxWidth="50dp"
+        android:maxHeight="50dp"
+        android:rotation="-90"
+        android:scaleType="fitCenter"
+        android:src="@drawable/snake_tail"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageSegment"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
     <ImageView
         android:id="@+id/imageApple"
@@ -50,8 +86,9 @@
         android:src="@drawable/apple"
         tools:ignore="MissingConstraints"
         android:adjustViewBounds="true"
-        android:maxWidth="75dp"
-        android:maxHeight="75dp"
+        android:maxWidth="65dp"
+        android:maxHeight="65dp"
         android:scaleType="fitCenter"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

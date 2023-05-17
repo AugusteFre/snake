@@ -8,10 +8,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private int screenWidth;
     int directionX;
     int directionY;
+    int moveCooldown = 15;
 
     int score = 0;
 
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
 
         moveApple();
+
     }
 
 
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, gravity, SensorManager.SENSOR_DELAY_NORMAL);
+
 
     }
 
@@ -81,20 +84,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float z = event.values[2];
 
             // Met à jour la TextView avec les valeurs du capteur de gravité, raccourci à un chiffre après la virgule
-            gravityValues.setText("X: " + ((int)(x*10))/10f + "\nY: " + ((int)(y*10))/10f + "\nZ: " + ((int)(z*10))/10f + "\nscore : " + score);
+            gravityValues.setText("X: " + ((int) (x * 10)) / 10f + "\nY: " + ((int) (y * 10)) / 10f + "\nZ: " + ((int) (z * 10)) / 10f + "\nscore : " + score);
 
             // Met à jour la TextView avec les valeurs du capteur de gravité, affichés en % (il y a des pourcents négatifs, donc jsp)
             // gravityValues.setText("X: " + ((int)(x*10)) + "%\nY: " + ((int)(y*10)) + "%\nZ: " + ((int)(z*10)) + "%");
 
-            // Méthode qui met à jour la position de la bulle
-            changeSnakeDirection(x, y);
-            checkSnakeAppleCollision();
+            // Méthode qui met à jour la position du serpent
 
-            imageSnake.setX(imageSnake.getX() + directionX);
-            imageSnake.setY(imageSnake.getY() + directionY);
+            if(moveCooldown == 0) {
+                changeSnakeDirection(x, y);
+                checkSnakeAppleCollision();
+                moveSnake();
+                moveCooldown = 15;
+            } else {
+                moveCooldown--;
+            }
         }
     }
-
 
 
     @Override
@@ -104,55 +110,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * Met à jour la position de la bulle en fonction de la rotation du téléphone
+     *
      * @param x la position x retournée par le "capteur de gravité"
      * @param y la position y retournée par le "capteur de gravité"
      */
     private void changeSnakeDirection(float x, float y) {
 
-        /*
-        // Calculez les nouvelles coordonnées en ajoutant les valeurs du gravity
-        float newX = (x * (screenWidth/2f/10f) + screenWidth/2f - imageSnake.getWidth()/2f);
-        float newY = (y * (screenHeight/2f/10f) + screenHeight/2f - imageSnake.getHeight()/2f);
-
-        // Limitez les coordonnées à l'intérieur de l'écran
-        newX = Math.max(0, Math.min(newX, screenWidth - imageSnake.getWidth()));
-        newY = Math.max(0, Math.min(newY, screenHeight - imageSnake.getHeight()));
-
-        // Définissez les nouvelles coordonnées pour le TextView
-        imageSnake.setX(newX);
-        imageSnake.setY(newY);
-        */
-
-        if(y > 3 && directionX != -3) {
+        if (y > 3 && directionX != -imageSnake.getWidth()) {
             imageSnake.setRotation(90);
             directionY = 0;
-            directionX = 3;
+            directionX = imageSnake.getWidth();
             directionValues.setText("droite" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
-        } if (y < -3 && directionX != 3) {
+        }
+        if (y < -3 && directionX != imageSnake.getWidth()) {
             imageSnake.setRotation(-90);
             directionY = 0;
-            directionX = -3;
+            directionX = -imageSnake.getWidth();
             directionValues.setText("gauche" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
-        } if (x > 3 && directionY != -3) {
+        }
+        if (x > 3 && directionY != -imageSnake.getWidth()) {
             imageSnake.setRotation(180);
-            directionY = 3;
+            directionY = imageSnake.getWidth();
             directionX = 0;
             directionValues.setText("bas" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
-        } if (x < -3 && directionY != 3) {
+        }
+        if (x < -3 && directionY != imageSnake.getWidth()) {
             imageSnake.setRotation(0);
-            directionY = -3;
+            directionY = -imageSnake.getWidth();
             directionX = 0;
             directionValues.setText("haut" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
-        } if(x >= -3 && x <= 3 && y >= -3 && y <= 3) {
+        }
+        if (x >= -3 && x <= 3 && y >= -3 && y <= 3) {
             directionValues.setText("tout droit" + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
         }
 
-        if(imageSnake.getY() > screenHeight - imageSnake.getHeight() || imageSnake.getY() < 0 || imageSnake.getX() < 0 || imageSnake.getX() > screenWidth - imageSnake.getWidth()) {
-            directionValues.setText("t mor");
-            directionY = 0;
-            directionX = 0;
-            this.finish();
-        }
+        checkSnakeCollision();
     }
 
     /**
@@ -174,12 +166,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         imageApple.setY(appleY);
     }
 
+    /**
+     * Vérifie si la tête du serpent mange une pomme
+     */
     private void checkSnakeAppleCollision() {
-        Rect rc1 = new Rect(imageSnake.getLeft(), imageSnake.getTop(), imageSnake.getRight(), imageSnake.getBottom());
-        Rect rc2 = new Rect(imageApple.getLeft(), imageApple.getTop(), imageApple.getRight(), imageApple.getBottom());
+        Rect rc1 = new Rect((int) imageSnake.getX(), (int) imageSnake.getY(), (int) imageSnake.getX() + imageSnake.getWidth(), (int) imageSnake.getY() + imageSnake.getHeight());
+        Rect rc2 = new Rect((int) imageApple.getX(), (int) imageApple.getY(), (int) imageApple.getX() + imageApple.getWidth(), (int) imageApple.getY() + imageApple.getHeight());
         if (Rect.intersects(rc1, rc2)) {
-            score+=1;
-            // moveApple();
+            score += 1;
+            moveApple();
         }
+    }
+
+    /**
+     * Vérifie si le serpent entre en collision avec le bord de l'écran
+     */
+    private void checkSnakeCollision() {
+        if (imageSnake.getY() > screenHeight - imageSnake.getHeight() || imageSnake.getY() < 0 || imageSnake.getX() < 0 || imageSnake.getX() > screenWidth - imageSnake.getWidth()) {
+            directionValues.setText("t mor");
+            directionY = 0;
+            directionX = 0;
+            this.finish();
+        }
+    }
+
+    /**
+     * déplace le serpent
+     */
+    private void moveSnake() {
+        imageSnake.setX(imageSnake.getX() + directionX);
+        imageSnake.setY(imageSnake.getY() + directionY);
     }
 }
