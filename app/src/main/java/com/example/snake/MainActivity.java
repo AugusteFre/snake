@@ -92,8 +92,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Méthode qui met à jour la position du serpent
 
             if(moveCooldown == 0) {
-                changeSnakeDirection(x, y);
                 checkSnakeAppleCollision();
+                changeSnakeDirection(x, y);
                 moveSnake();
                 moveCooldown = 15;
             } else {
@@ -122,25 +122,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             directionX = imageSnake.getWidth();
             directionValues.setText("droite" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
         }
-        if (y < -3 && directionX != imageSnake.getWidth()) {
+        else if (y < -3 && directionX != imageSnake.getWidth()) {
             imageSnake.setRotation(-90);
             directionY = 0;
             directionX = -imageSnake.getWidth();
             directionValues.setText("gauche" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
         }
-        if (x > 3 && directionY != -imageSnake.getWidth()) {
+        else if (x > 3 && directionY != -imageSnake.getWidth()) {
             imageSnake.setRotation(180);
             directionY = imageSnake.getWidth();
             directionX = 0;
             directionValues.setText("bas" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
         }
-        if (x < -3 && directionY != imageSnake.getWidth()) {
+        else if (x < -3 && directionY != imageSnake.getWidth()) {
             imageSnake.setRotation(0);
             directionY = -imageSnake.getWidth();
             directionX = 0;
             directionValues.setText("haut" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
         }
-        if (x >= -3 && x <= 3 && y >= -3 && y <= 3) {
+        else if (x >= -3 && x <= 3 && y >= -3 && y <= 3) {
             directionValues.setText("tout droit" + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
         }
 
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     /**
-     * Génère une pomme à un endroit aléatoire sur l'écran
+     * Déplace la pomme à un endroit aléatoire dans la zone de jeu
      */
     private void moveApple() {
         int MAX_X = screenWidth - 100;
@@ -197,4 +197,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         imageSnake.setX(imageSnake.getX() + directionX);
         imageSnake.setY(imageSnake.getY() + directionY);
     }
+
+    //TODO faire une classe pour la tête du serpent qui se souvient de la position précédente après déplacement
+    //TODO même chose pour le corps du serpent, mais ils ne pourront pas manger la pomme et auront une collision
+    //TODO en faire une pour la queue qui n'a pas besoin de se rappeler de la position précédente
 }
