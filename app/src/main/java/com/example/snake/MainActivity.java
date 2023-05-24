@@ -23,16 +23,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView directionValues;
     private TextView appleValues;
     private ImageView imageSnake;
+    private ImageView imageSnakeBody;
+    private ImageView imageSnakeTail;
     private ImageView imageApple;
 
     // déclaration des variables
     private int screenHeight;
     private int screenWidth;
-    int directionX;
-    int directionY;
+    private int movementValue;
     int moveCooldown = 15;
 
     int score = 0;
+
+    snakeHead snake;
+    snakeBody firstSegment;
 
 
     @Override
@@ -50,7 +54,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gravityValues = findViewById(R.id.gravityValues);
         directionValues = findViewById(R.id.directionValue);
         appleValues = findViewById(R.id.appleValue);
+
         imageSnake = findViewById(R.id.imageSnake);
+        imageSnakeBody = findViewById(R.id.imageSnakeBody);
+        imageSnakeTail = findViewById(R.id.imageSnakeTail);
         imageApple = findViewById(R.id.imageApple);
 
         // définit le type de capteur
@@ -59,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         moveApple();
 
+        snake = new snakeHead(imageSnake);
+        firstSegment = new snakeBody(imageSnakeBody);
+        movementValue = screenWidth/19;
     }
 
 
@@ -94,7 +104,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(moveCooldown == 0) {
                 checkSnakeAppleCollision();
                 changeSnakeDirection(x, y);
-                moveSnake();
+                snake.moveSnake();
+                firstSegment.followPreviousSegment(snake.getPreviousPosX(), snake.getPreviousPosY(), snake.getRotationAngle());
                 moveCooldown = 15;
             } else {
                 moveCooldown--;
@@ -116,32 +127,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     private void changeSnakeDirection(float x, float y) {
 
-        if (y > 3 && directionX != -imageSnake.getWidth()) {
-            imageSnake.setRotation(90);
-            directionY = 0;
-            directionX = imageSnake.getWidth();
-            directionValues.setText("droite" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
+        if (y > 3 && snake.getDirectionX() != -movementValue) {
+            snake.rotateSnake(90);
+            snake.setDirectionY(0);
+            snake.setDirectionX(100);
+            directionValues.setText("droite" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
-        else if (y < -3 && directionX != imageSnake.getWidth()) {
-            imageSnake.setRotation(-90);
-            directionY = 0;
-            directionX = -imageSnake.getWidth();
-            directionValues.setText("gauche" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
+        else if (y < -3 && snake.getDirectionX() != movementValue) {
+            snake.rotateSnake(-90);
+            snake.setDirectionY(0);
+            snake.setDirectionX(-movementValue);
+            directionValues.setText("gauche" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
-        else if (x > 3 && directionY != -imageSnake.getWidth()) {
-            imageSnake.setRotation(180);
-            directionY = imageSnake.getWidth();
-            directionX = 0;
-            directionValues.setText("bas" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
+        else if (x > 3 && snake.getDirectionY() != -movementValue) {
+            snake.rotateSnake(180);
+            snake.setDirectionY(movementValue);
+            snake.setDirectionX(0);
+            directionValues.setText("bas" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
-        else if (x < -3 && directionY != imageSnake.getWidth()) {
-            imageSnake.setRotation(0);
-            directionY = -imageSnake.getWidth();
-            directionX = 0;
-            directionValues.setText("haut" + "\nX:" + directionX + "\nY:" + directionY + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
+        else if (x < -3 && snake.getDirectionY() != movementValue) {
+            snake.rotateSnake(0);
+            snake.setDirectionY(-movementValue);
+            snake.setDirectionX(0);
+            directionValues.setText("haut" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
         else if (x >= -3 && x <= 3 && y >= -3 && y <= 3) {
-            directionValues.setText("tout droit" + "\nwormX " + imageSnake.getX() + "\nwormY " + imageSnake.getY());
+            directionValues.setText("tout droit" + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
 
         checkSnakeCollision();
@@ -151,10 +162,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * Déplace la pomme à un endroit aléatoire dans la zone de jeu
      */
     private void moveApple() {
-        int MAX_X = screenWidth - 100;
-        int MAX_Y = screenHeight - 100;
-        int MIN_X = 50;
-        int MIN_Y = 50;
+        int MAX_X = screenWidth - movementValue;
+        int MAX_Y = screenHeight - movementValue;
+        int MIN_X = movementValue;
+        int MIN_Y = movementValue;
 
         int appleX = (int) ((Math.random() * (MAX_X - MIN_X)) + MIN_X);
         int appleY = (int) ((Math.random() * (MAX_Y - MIN_Y)) + MIN_Y);
@@ -170,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * Vérifie si la tête du serpent mange une pomme
      */
     private void checkSnakeAppleCollision() {
-        Rect rc1 = new Rect((int) imageSnake.getX(), (int) imageSnake.getY(), (int) imageSnake.getX() + imageSnake.getWidth(), (int) imageSnake.getY() + imageSnake.getHeight());
+        Rect rc1 = new Rect((int) snake.getPosX(), (int) snake.getPosY(), (int) snake.getPosX() + movementValue, (int) snake.getPosY() + movementValue);
         Rect rc2 = new Rect((int) imageApple.getX(), (int) imageApple.getY(), (int) imageApple.getX() + imageApple.getWidth(), (int) imageApple.getY() + imageApple.getHeight());
         if (Rect.intersects(rc1, rc2)) {
             score += 1;
@@ -178,27 +189,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+
     /**
      * Vérifie si le serpent entre en collision avec le bord de l'écran
      */
     private void checkSnakeCollision() {
-        if (imageSnake.getY() > screenHeight - imageSnake.getHeight() || imageSnake.getY() < 0 || imageSnake.getX() < 0 || imageSnake.getX() > screenWidth - imageSnake.getWidth()) {
+        if (snake.getPosY() > screenHeight - movementValue || snake.getPosY() < -20 || snake.getPosX() < -20 || snake.getPosX() > screenWidth - movementValue) {
             directionValues.setText("t mor");
-            directionY = 0;
-            directionX = 0;
+            snake.setDirectionY(0);
+            snake.setDirectionX(0);
             this.finish();
         }
     }
 
-    /**
-     * déplace le serpent
-     */
-    private void moveSnake() {
-        imageSnake.setX(imageSnake.getX() + directionX);
-        imageSnake.setY(imageSnake.getY() + directionY);
-    }
 
-    //TODO faire une classe pour la tête du serpent qui se souvient de la position précédente après déplacement
-    //TODO même chose pour le corps du serpent, mais ils ne pourront pas manger la pomme et auront une collision
     //TODO en faire une pour la queue qui n'a pas besoin de se rappeler de la position précédente
 }
