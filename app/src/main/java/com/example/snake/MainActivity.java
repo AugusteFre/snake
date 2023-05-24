@@ -1,6 +1,7 @@
 package com.example.snake;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.graphics.Rect;
 import android.hardware.Sensor;
@@ -12,6 +13,7 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import android.widget.TextView;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -35,8 +37,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     int score = 0;
 
+    private ConstraintLayout snakeGame;
+
     snakeHead snake;
     snakeBody firstSegment;
+
+    ArrayList<snakeBody> bodySegments = new ArrayList<>();
     snakeTail tail;
 
 
@@ -57,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         directionValues = findViewById(R.id.directionValue);
         appleValues = findViewById(R.id.appleValue);
 
+        snakeGame = findViewById(R.id.snakeGame);
+
         imageSnake = findViewById(R.id.imageSnake);
         imageSnakeBody = findViewById(R.id.imageSnakeBody);
         imageSnakeTail = findViewById(R.id.imageSnakeTail);
@@ -70,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         snake = new snakeHead(imageSnake);
         firstSegment = new snakeBody(imageSnakeBody);
+        bodySegments.add(firstSegment);
         tail = new snakeTail(imageSnakeTail);
         movementValue = screenWidth/19;
     }
@@ -103,8 +112,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 checkSnakeAppleCollision();
                 changeSnakeDirection(x, y);
                 snake.moveSnake();
-                firstSegment.followPreviousSegment(snake.getPreviousPosX(), snake.getPreviousPosY(), snake.getPreviousRotationAngle());
-                tail.followPreviousSegment(firstSegment.getPreviousPosX(), firstSegment.getPreviousPosY(), firstSegment.getPreviousRotationAngle());
+                int i = 0;
+                for (snakeBody segment : bodySegments) {
+                    if(i==0) {
+                        segment.followPreviousSegment(snake.getPreviousPosX(), snake.getPreviousPosY(), snake.getPreviousRotationAngle());
+                    } else {
+                        segment.followPreviousSegment(bodySegments.get(i-1).getPreviousPosX(), bodySegments.get(i-1).getPreviousPosY(), bodySegments.get(i-1).getPreviousRotationAngle());
+                    }
+                    i++;
+                }
+                tail.followPreviousSegment(bodySegments.get(bodySegments.size()-1).getPreviousPosX(), bodySegments.get(bodySegments.size()-1).getPreviousPosY(), bodySegments.get(bodySegments.size()-1).getPreviousRotationAngle());
+
+
                 moveCooldown = 15;
             } else {
                 moveCooldown--;
@@ -185,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (Rect.intersects(rc1, rc2)) {
             score += 1;
             moveApple();
+            eatApple();
         }
     }
 
@@ -201,5 +221,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    private void eatApple() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int dp = 50; // Taille en dp
+        int pixels = (int) (dp * displayMetrics.density);
 
+        ImageView newSegmentImage = new ImageView(this);
+        newSegmentImage.setImageResource(R.drawable.snake_body);
+        newSegmentImage.setAdjustViewBounds(true);
+        newSegmentImage.setMaxHeight(pixels);
+        newSegmentImage.setMaxWidth(pixels);
+        newSegmentImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        //which adds the imageview to your layout
+        snakeGame.addView(newSegmentImage);
+        snakeBody newSegment = new snakeBody(newSegmentImage);
+        bodySegments.add(newSegment);
+    }
 }
