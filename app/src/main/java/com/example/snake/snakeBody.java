@@ -7,6 +7,7 @@ public class snakeBody {
     private ImageView imageSnakeBody;
     private float previousPosX;
     private float previousPosY;
+    private float previousRotationAngle;
 
 
     public snakeBody(ImageView imageSnakeBody) {
@@ -16,6 +17,7 @@ public class snakeBody {
     public void followPreviousSegment(float posX, float posY, float rotationAngle) {
         previousPosX = imageSnakeBody.getX();
         previousPosY = imageSnakeBody.getY();
+        previousRotationAngle = imageSnakeBody.getRotation();
 
         imageSnakeBody.setX(posX);
         imageSnakeBody.setY(posY);
@@ -28,6 +30,10 @@ public class snakeBody {
 
     public float getPreviousPosY() {
         return this.previousPosY;
+    }
+
+    public float getPreviousRotationAngle() {
+        return this.previousRotationAngle;
     }
 
     public float getPosX() {

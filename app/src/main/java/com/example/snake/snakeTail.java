@@ -2,7 +2,7 @@ package com.example.snake;
 
 import android.widget.ImageView;
 
-//TODO même chose pour le corps du serpent, mais ils ne pourront pas manger la pomme et auront une collision
+//TODO en faire une pour la queue qui n'a pas besoin de se rappeler de la position précédente
 public class snakeTail {
     private ImageView imagesnakeTail;
 

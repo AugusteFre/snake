@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     snakeHead snake;
     snakeBody firstSegment;
+    snakeTail tail;
+
 
 
     @Override
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         snake = new snakeHead(imageSnake);
         firstSegment = new snakeBody(imageSnakeBody);
+        tail = new snakeTail(imageSnakeTail);
         movementValue = screenWidth/19;
     }
 
@@ -96,16 +99,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Met à jour la TextView avec les valeurs du capteur de gravité, raccourci à un chiffre après la virgule
             gravityValues.setText("X: " + ((int) (x * 10)) / 10f + "\nY: " + ((int) (y * 10)) / 10f + "\nZ: " + ((int) (z * 10)) / 10f + "\nscore : " + score);
 
-            // Met à jour la TextView avec les valeurs du capteur de gravité, affichés en % (il y a des pourcents négatifs, donc jsp)
-            // gravityValues.setText("X: " + ((int)(x*10)) + "%\nY: " + ((int)(y*10)) + "%\nZ: " + ((int)(z*10)) + "%");
-
-            // Méthode qui met à jour la position du serpent
-
             if(moveCooldown == 0) {
                 checkSnakeAppleCollision();
                 changeSnakeDirection(x, y);
                 snake.moveSnake();
-                firstSegment.followPreviousSegment(snake.getPreviousPosX(), snake.getPreviousPosY(), snake.getRotationAngle());
+                firstSegment.followPreviousSegment(snake.getPreviousPosX(), snake.getPreviousPosY(), snake.getPreviousRotationAngle());
+                tail.followPreviousSegment(firstSegment.getPreviousPosX(), firstSegment.getPreviousPosY(), firstSegment.getPreviousRotationAngle());
                 moveCooldown = 15;
             } else {
                 moveCooldown--;
@@ -203,5 +202,4 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
-    //TODO en faire une pour la queue qui n'a pas besoin de se rappeler de la position précédente
 }

@@ -53,7 +53,7 @@ public class snakeHead {
         return this.previousPosY;
     }
 
-    public float getRotationAngle() {
+    public float getPreviousRotationAngle() {
         return this.previousRotationAngle;
     }
 
