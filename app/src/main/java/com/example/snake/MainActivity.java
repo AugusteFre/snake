@@ -81,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         bodySegments.add(firstSegment);
         tail = new snakeTail(imageSnakeTail);
         movementValue = screenWidth/19;
+
+        snake.setDirectionX(-movementValue);
     }
 
 
@@ -122,8 +124,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     i++;
                 }
                 tail.followPreviousSegment(bodySegments.get(bodySegments.size()-1).getPreviousPosX(), bodySegments.get(bodySegments.size()-1).getPreviousPosY(), bodySegments.get(bodySegments.size()-1).getPreviousRotationAngle());
-
-
                 moveCooldown = 15;
             } else {
                 moveCooldown--;
@@ -145,10 +145,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     private void changeSnakeDirection(float x, float y) {
 
+        checkSnakeCollision();
+        checkSnakeBodyCollision();
+
         if (y > 3 && snake.getDirectionX() != -movementValue) {
             snake.rotateSnake(90);
             snake.setDirectionY(0);
-            snake.setDirectionX(100);
+            snake.setDirectionX(movementValue);
             directionValues.setText("droite" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
         else if (y < -3 && snake.getDirectionX() != movementValue) {
@@ -173,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             directionValues.setText("tout droit" + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
 
-        checkSnakeCollision();
     }
 
     /**
@@ -208,33 +210,69 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    /**
+     * Vérifie si le serpent collisionne avec un mur ou avec son propre corps
+     */
+    private void checkSnakeBodyCollision() {
+        Rect rc1 = new Rect((int) snake.getPosX(), (int) snake.getPosY(), (int) snake.getPosX() + movementValue, (int) snake.getPosY() + movementValue);
+        Rect rc2 = new Rect((int) tail.getPosX(), (int) tail.getPosY(), (int) tail.getPosX() + movementValue, (int) tail.getPosY() + movementValue);
+        if (Rect.intersects(rc1, rc2)) {
+            killSnake();
+        }
+
+        for (snakeBody segment : bodySegments) {
+            Rect rc3 = new Rect((int) segment.getPosX(), (int) segment.getPosY(), (int) segment.getPosX() + movementValue, (int) segment.getPosY() + movementValue);
+            if (Rect.intersects(rc1, rc3)) {
+                killSnake();
+            }
+        }
+    }
+
 
     /**
      * Vérifie si le serpent entre en collision avec le bord de l'écran
      */
     private void checkSnakeCollision() {
         if (snake.getPosY() > screenHeight - movementValue || snake.getPosY() < -20 || snake.getPosX() < -20 || snake.getPosX() > screenWidth - movementValue) {
-            directionValues.setText("t mor");
-            snake.setDirectionY(0);
-            snake.setDirectionX(0);
-            this.finish();
+            killSnake();
         }
     }
 
+    /**
+     * Termine l'activitée (appelèe quand le serpent touche un mur ou son corps)
+     */
+    private void killSnake() {
+        directionValues.setText("t mor");
+        snake.setDirectionY(0);
+        snake.setDirectionX(0);
+        this.finish();
+    }
+
+    /**
+     * Lorsque le serpent mange une pomme, on lui ajoute un nouveau segment à la fin de ses segments actuels et avant sa queue
+     */
     private void eatApple() {
+        // pour avoir la taille en dp
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int dp = 50; // Taille en dp
         int pixels = (int) (dp * displayMetrics.density);
 
+        // modifications des dimensions
         ImageView newSegmentImage = new ImageView(this);
         newSegmentImage.setImageResource(R.drawable.snake_body);
         newSegmentImage.setAdjustViewBounds(true);
         newSegmentImage.setMaxHeight(pixels);
         newSegmentImage.setMaxWidth(pixels);
         newSegmentImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        //which adds the imageview to your layout
-        snakeGame.addView(newSegmentImage);
+
+        // ajout à la liste des segments
         snakeBody newSegment = new snakeBody(newSegmentImage);
         bodySegments.add(newSegment);
+
+        newSegment.setPreviousPosX(tail.getPosX());
+        newSegment.setPreviousPosY(tail.getPosY());
+
+        // ajout du nouveau segment sur la zone de jeu
+        snakeGame.addView(newSegmentImage);
     }
 }
