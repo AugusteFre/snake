@@ -31,7 +31,7 @@ public class snakeBody {
 
         imageSnakeBody.setX(posX);
         imageSnakeBody.setY(posY);
-        this.imageSnakeBody.setRotation(rotationAngle);
+        this.setRotationAngle(rotationAngle);
     }
 
     /**
@@ -74,19 +74,34 @@ public class snakeBody {
         return this.imageSnakeBody.getY();
     }
 
-    // à voir si je garde.
+    /**
+     * définit la position prédédante X, je l'utilise à l'ajout d'un nouveau segment, pour éviter qu'elle soit de 0
+     * @param previousPosX la position donnée
+     */
     public void setPreviousPosX(float previousPosX) {
         this.previousPosX = previousPosX;
     }
 
+    /**
+     * définit la position prédédante Y, je l'utilise à l'ajout d'un nouveau segment, pour éviter qu'elle soit de 0
+     * @param previousPosY la position donnée
+     */
     public void setPreviousPosY(float previousPosY) {
         this.previousPosY = previousPosY;
     }
 
+    /**
+     * Définit l'angle de rotation que le segment devra adopter
+     * @param angle le nouvel angle
+     */
     public void setRotationAngle(float angle) {
         this.imageSnakeBody.setRotation(angle);
     }
 
+    /**
+     * Définit l'ancien angle de rotation que le segment devra enregistrer
+     * @param previousRotationAngle le nouvel angle
+     */
     public void setPreviousRotationAngle(float previousRotationAngle) {
         this.previousRotationAngle = previousRotationAngle;
     }

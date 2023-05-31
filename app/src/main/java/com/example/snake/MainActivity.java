@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
         sensorManager.registerListener(this, gravity, SensorManager.SENSOR_DELAY_NORMAL);
 
-
     }
 
     @Override

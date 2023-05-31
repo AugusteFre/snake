@@ -42,6 +42,10 @@ public class snakeTail {
         return this.imagesnakeTail.getY();
     }
 
+    /**
+     * Récupère l'angle de rotation de la queue, afin de l'appliquer au nouveau segment ajouté après avoir mangé une pomme
+     * @return L'angle de rotation
+     */
     public float getRotation() {
         return this.imagesnakeTail.getRotation();
     }
