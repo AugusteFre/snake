@@ -8,7 +8,7 @@ public class snakeHead {
     private int directionY = 0;
     private float previousPosX = 0;
     private float previousPosY = 0;
-    private float previousRotationAngle = 0;
+    private float previousRotationAngle = -90;
 
 
     /**
@@ -61,6 +61,7 @@ public class snakeHead {
 
         imageSnakeHead.setX(imageSnakeHead.getX() + directionX);
         imageSnakeHead.setY(imageSnakeHead.getY() + directionY);
+        previousRotationAngle = imageSnakeHead.getRotation();
     }
 
     /**

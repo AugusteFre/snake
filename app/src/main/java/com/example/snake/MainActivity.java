@@ -152,29 +152,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             snake.rotateSnake(90);
             snake.setDirectionY(0);
             snake.setDirectionX(movementValue);
-            directionValues.setText("droite" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
+            //directionValues.setText("droite" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
         else if (y < -3 && snake.getDirectionX() != movementValue) {
             snake.rotateSnake(-90);
             snake.setDirectionY(0);
             snake.setDirectionX(-movementValue);
-            directionValues.setText("gauche" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
+            //directionValues.setText("gauche" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
         else if (x > 3 && snake.getDirectionY() != -movementValue) {
             snake.rotateSnake(180);
             snake.setDirectionY(movementValue);
             snake.setDirectionX(0);
-            directionValues.setText("bas" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
+            //directionValues.setText("bas" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
         else if (x < -3 && snake.getDirectionY() != movementValue) {
             snake.rotateSnake(0);
             snake.setDirectionY(-movementValue);
             snake.setDirectionX(0);
-            directionValues.setText("haut" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
+            //directionValues.setText("haut" + "\nX:" + snake.getDirectionX() + "\nY:" + snake.getDirectionY() + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
         else if (x >= -3 && x <= 3 && y >= -3 && y <= 3) {
-            directionValues.setText("tout droit" + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
+            //directionValues.setText("tout droit" + "\nwormX " + snake.getPosX() + "\nwormY " + snake.getPosY());
         }
+        directionValues.setText("rotation : " + imageSnake.getRotation() + "\nancienne rotation : " + snake.getPreviousRotationAngle());
 
     }
 
