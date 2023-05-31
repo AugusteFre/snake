@@ -83,4 +83,12 @@ public class snakeBody {
         this.previousPosY = previousPosY;
     }
 
+    public void setRotationAngle(float angle) {
+        this.imageSnakeBody.setRotation(angle);
+    }
+
+    public void setPreviousRotationAngle(float previousRotationAngle) {
+        this.previousRotationAngle = previousRotationAngle;
+    }
+
 }

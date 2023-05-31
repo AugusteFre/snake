@@ -23,7 +23,7 @@ public class snakeTail {
     public void followPreviousSegment(float posX, float posY, float rotationAngle) {
         imagesnakeTail.setX(posX);
         imagesnakeTail.setY(posY);
-        this.imagesnakeTail.setRotation(rotationAngle);
+        imagesnakeTail.setRotation(rotationAngle);
     }
 
     /**
@@ -40,5 +40,9 @@ public class snakeTail {
      */
     public float getPosY() {
         return this.imagesnakeTail.getY();
+    }
+
+    public float getRotation() {
+        return this.imagesnakeTail.getRotation();
     }
 }
