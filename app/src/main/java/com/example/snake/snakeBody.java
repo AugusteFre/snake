@@ -25,12 +25,12 @@ public class snakeBody {
      * @param rotationAngle l'ancien angle de rotation
      */
     public void followPreviousSegment(float posX, float posY, float rotationAngle) {
-        previousPosX = imageSnakeBody.getX();
-        previousPosY = imageSnakeBody.getY();
-        previousRotationAngle = imageSnakeBody.getRotation();
+        this.previousPosX = imageSnakeBody.getX();
+        this.previousPosY = imageSnakeBody.getY();
+        this.previousRotationAngle = imageSnakeBody.getRotation();
 
-        imageSnakeBody.setX(posX);
-        imageSnakeBody.setY(posY);
+        this.imageSnakeBody.setX(posX);
+        this.imageSnakeBody.setY(posY);
         this.setRotationAngle(rotationAngle);
     }
 

@@ -56,12 +56,12 @@ public class snakeHead {
      * Déplace le serpent vers sa prochaine position. Enregistre l'ancienne position x et y
      */
     public void moveSnake() {
-        previousPosX = imageSnakeHead.getX();
-        previousPosY = imageSnakeHead.getY();
+        this.previousPosX = imageSnakeHead.getX();
+        this.previousPosY = imageSnakeHead.getY();
 
-        imageSnakeHead.setX(imageSnakeHead.getX() + directionX);
-        imageSnakeHead.setY(imageSnakeHead.getY() + directionY);
-        previousRotationAngle = imageSnakeHead.getRotation();
+        this.imageSnakeHead.setX(imageSnakeHead.getX() + directionX);
+        this.imageSnakeHead.setY(imageSnakeHead.getY() + directionY);
+        this.previousRotationAngle = imageSnakeHead.getRotation();
     }
 
     /**
@@ -69,7 +69,7 @@ public class snakeHead {
      * @param rotationAngle l'angle de rotation
      */
     public void rotateSnake(int rotationAngle) {
-        previousRotationAngle = imageSnakeHead.getRotation();
+        this.previousRotationAngle = imageSnakeHead.getRotation();
         this.imageSnakeHead.setRotation(rotationAngle);
     }
 

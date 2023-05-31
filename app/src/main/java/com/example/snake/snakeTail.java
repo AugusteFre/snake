@@ -21,9 +21,9 @@ public class snakeTail {
      * @param rotationAngle l'ancien angle de rotation
      */
     public void followPreviousSegment(float posX, float posY, float rotationAngle) {
-        imagesnakeTail.setX(posX);
-        imagesnakeTail.setY(posY);
-        imagesnakeTail.setRotation(rotationAngle);
+        this.imagesnakeTail.setX(posX);
+        this.imagesnakeTail.setY(posY);
+        this.imagesnakeTail.setRotation(rotationAngle);
     }
 
     /**
