@@ -59,7 +59,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final int REEEALLY_FAST_COOLDOWN = 5;
 
 
-
+    /**
+     * Se fait à la création de l'activité
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager.unregisterListener(this);
     }
 
+    /**
+     * Il s'exécute constemment, pendant la partie du snake
+     * @param event
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
@@ -128,10 +135,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 snake.moveSnake();
                 checkSnakeAppleCollision();
                 int i = 0;
+                // on parcourt tout les segments du serpent
                 for (snakeBody segment : bodySegments) {
                     if(i==0) {
+                        // si c'est le premier, il doit suivre la tête
                         segment.followPreviousSegment(snake.getPreviousPosX(), snake.getPreviousPosY(), snake.getPreviousRotationAngle());
                     } else {
+                        // sinon, il suit le segment devant
                         segment.followPreviousSegment(bodySegments.get(i-1).getPreviousPosX(), bodySegments.get(i-1).getPreviousPosY(), bodySegments.get(i-1).getPreviousRotationAngle());
                     }
                     i++;
@@ -160,7 +170,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-
+    /**
+     * On l'utilise pas
+     * @param sensor
+     * @param accuracy
+     */
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Ne fais rien pour l'instant
@@ -168,26 +182,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * Met à jour la position de la bulle en fonction de la rotation du téléphone
-     *
      * @param x la position x retournée par le "capteur de gravité"
      * @param y la position y retournée par le "capteur de gravité"
      */
     private void changeSnakeDirection(float x, float y) {
+        // il tourne à droite (seulement si il ne va pas vers la gauche)
         if (y > 3 && snake.getDirectionX() != -movementValue) {
             snake.rotateSnake(90);
             snake.setDirectionY(0);
             snake.setDirectionX(movementValue);
         }
+        // il tourne à gauche (seulement si il ne va pas vers la droite)
         else if (y < -3 && snake.getDirectionX() != movementValue) {
             snake.rotateSnake(-90);
             snake.setDirectionY(0);
             snake.setDirectionX(-movementValue);
         }
+        // il va en bas (seulement si il ne va pas vers le haut)
         else if (x > 3 && snake.getDirectionY() != -movementValue) {
             snake.rotateSnake(180);
             snake.setDirectionY(movementValue);
             snake.setDirectionX(0);
         }
+        // il va en haut (seulement si il ne va pas vers le bas)
         else if (x < -3 && snake.getDirectionY() != movementValue) {
             snake.rotateSnake(0);
             snake.setDirectionY(-movementValue);
@@ -219,17 +236,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void checkSnakeAppleCollision() {
         Rect headRect = new Rect((int) snake.getPosX(), (int) snake.getPosY(), (int) snake.getPosX() + movementValue, (int) snake.getPosY() + movementValue);
         Rect appleRect = new Rect((int) imageApple.getX(), (int) imageApple.getY(), (int) imageApple.getX() + imageApple.getWidth(), (int) imageApple.getY() + imageApple.getHeight());
+
+        for (snakeBody segment : bodySegments) {
+            Rect bodyRect = new Rect((int) segment.getPosX(), (int) segment.getPosY(), (int) segment.getPosX() + movementValue, (int) segment.getPosY() + movementValue);
+            if (Rect.intersects(appleRect, bodyRect)) {
+                moveApple();
+                checkSnakeAppleCollision();
+            }
+        }
+
         if (Rect.intersects(headRect, appleRect)) {
             score += 1;
             moveApple();
             eatApple();
-        }
-
-        for (snakeBody segment : bodySegments) {
-            Rect bodyRect = new Rect((int) segment.getPosX(), (int) segment.getPosY(), (int) segment.getPosX() + movementValue, (int) segment.getPosY() + movementValue);
-            if (Rect.intersects(headRect, bodyRect)) {
-                checkSnakeAppleCollision();
-            }
         }
     }
 
