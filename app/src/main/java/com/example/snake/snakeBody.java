@@ -108,13 +108,4 @@ public class snakeBody {
     public void setPreviousRotationAngle(float previousRotationAngle) {
         this.previousRotationAngle = previousRotationAngle;
     }
-
-
-    /**
-     * Rend le corps invisible (utilisé pour la mort)
-     */
-    public void makeInvisible() {
-        this.imageSnakeBody.setVisibility(View.INVISIBLE);
-    }
-
 }

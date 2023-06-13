@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // déclaration des modules
     private SensorManager sensorManager;
     private Sensor gravity;
-    private TextView gravityValues;
+    private TextView scoreValue;
     private TextView directionValues;
     private TextView appleValues;
     private ImageView imageSnake;
@@ -47,6 +47,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     ArrayList<snakeBody> bodySegments = new ArrayList<>();
     snakeTail tail;
 
+    private final int OK_SCORE = 5;
+    private final int NICE_SCORE = 10;
+    private final int PRETTY_NICE_SCORE = 15;
+    private final int GOOD_SCORE = 25;
+
+    private final int SLOW_COOLDOWN = 15;
+    private final int NORMAL_COOLDOWN = 13;
+    private final int FAST_COOLDOWN = 10;
+    private final int VERY_FAST_COOLDOWN = 8;
+    private final int REEEALLY_FAST_COOLDOWN = 5;
+
 
 
     @Override
@@ -61,9 +72,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         screenWidth = displayMetrics.widthPixels;
 
         // déclare les vues
-        gravityValues = findViewById(R.id.gravityValues);
-        directionValues = findViewById(R.id.directionValue);
-        appleValues = findViewById(R.id.appleValue);
+        scoreValue = findViewById(R.id.scoreValues);
 
         snakeGame = findViewById(R.id.snakeGame);
 
@@ -111,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float y = event.values[1];
             float z = event.values[2];
 
-            // Met à jour la TextView avec les valeurs du capteur de gravité, raccourci à un chiffre après la virgule
-            gravityValues.setText("X: " + ((int) (x * 10)) / 10f + "\nY: " + ((int) (y * 10)) / 10f + "\nZ: " + ((int) (z * 10)) / 10f + "\nscore : " + score);
+            // Met à jour la TextView avec les valeurs du score
+            scoreValue.setText("score : " + score);
 
             if(moveCooldown == 0) {
                 changeSnakeDirection(x, y);
@@ -134,16 +143,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 checkSnakeBodyCollision();
 
                 // vitesse du serpent en fonction du score
-                if(score < 5) {
-                    moveCooldown = 15;
-                } else if (score < 10) {
-                    moveCooldown = 13;
-                } else if (score < 15) {
-                    moveCooldown = 10;
-                } else if (score < 25){
-                    moveCooldown = 8;
+                if(score < OK_SCORE) {
+                    moveCooldown = SLOW_COOLDOWN;
+                } else if (score < NICE_SCORE) {
+                    moveCooldown = NORMAL_COOLDOWN;
+                } else if (score < PRETTY_NICE_SCORE) {
+                    moveCooldown = FAST_COOLDOWN;
+                } else if (score < GOOD_SCORE){
+                    moveCooldown = VERY_FAST_COOLDOWN;
                 } else {
-                    moveCooldown = 5;
+                    moveCooldown = REEEALLY_FAST_COOLDOWN;
                 }
             } else {
                 moveCooldown--;
@@ -164,8 +173,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * @param y la position y retournée par le "capteur de gravité"
      */
     private void changeSnakeDirection(float x, float y) {
-
-
         if (y > 3 && snake.getDirectionX() != -movementValue) {
             snake.rotateSnake(90);
             snake.setDirectionY(0);
@@ -192,43 +199,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * Déplace la pomme à un endroit aléatoire dans la zone de jeu
      */
     private void moveApple() {
-        int MAX_X = 19;
-        int MAX_Y = 9;
-        int MIN_X = 0;
-        int MIN_Y = 0;
+        final int MAX_X = 19;
+        final int MAX_Y = 9;
+        final int MIN_X = 0;
+        final int MIN_Y = 0;
 
         int appleX;
         int appleY;
 
-        boolean appleOk = false;
-
-        //while(!appleOk) {
-            appleOk = true;
-            appleX = (int) ((Math.random() * (MAX_X - MIN_X)) + MIN_X);
-            appleY = (int) ((Math.random() * (MAX_Y - MIN_Y)) + MIN_Y);
-            imageApple.setX(appleX * movementValue);
-            imageApple.setY(appleY * movementValue);
-/*
-            // Teste si la pomme apparaît dans le corps du serpent
-            Rect appleRect = new Rect((int) imageApple.getX(), (int) imageApple.getY(), (int) imageApple.getX() + imageApple.getWidth(), (int) imageApple.getY() + imageApple.getHeight());
-            Rect headRect = new Rect((int) snake.getPosX(), (int) snake.getPosY(), (int) snake.getPosX() + movementValue, (int) snake.getPosY() + movementValue);
-            if (Rect.intersects(appleRect, headRect)) {
-                appleOk = false;
-            }
-
-            for (snakeBody segment : bodySegments) {
-                Rect bodyRect = new Rect((int) segment.getPosX(), (int) segment.getPosY(), (int) segment.getPosX() + movementValue, (int) segment.getPosY() + movementValue);
-                if (Rect.intersects(headRect, bodyRect)) {
-                    appleOk = false;
-                }
-            }
-
-            Rect tailRect = new Rect((int) tail.getPosX(), (int) tail.getPosY(), (int) tail.getPosX() + movementValue, (int) tail.getPosY() + movementValue);
-            if (Rect.intersects(appleRect, tailRect)) {
-                appleOk = false;
-            }
-            */
-        //}
+        appleX = (int) ((Math.random() * (MAX_X - MIN_X)) + MIN_X);
+        appleY = (int) ((Math.random() * (MAX_Y - MIN_Y)) + MIN_Y);
+        imageApple.setX(appleX * movementValue);
+        imageApple.setY(appleY * movementValue);
     }
 
     /**
@@ -241,6 +223,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             score += 1;
             moveApple();
             eatApple();
+        }
+
+        for (snakeBody segment : bodySegments) {
+            Rect bodyRect = new Rect((int) segment.getPosX(), (int) segment.getPosY(), (int) segment.getPosX() + movementValue, (int) segment.getPosY() + movementValue);
+            if (Rect.intersects(headRect, bodyRect)) {
+                checkSnakeAppleCollision();
+            }
         }
     }
 
@@ -275,67 +264,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * Termine l'activitée (appelèe quand le serpent touche un mur ou son corps)
      */
     private void killSnake() {
-/*
-        //explode(snake.getPosX(), snake.getPosY());
-        imageSnake.setVisibility(View.INVISIBLE);
-
-        try {
-            for (snakeBody segment : bodySegments) {
-                //explode(segment.getPosX(), segment.getPosY());
-                segment.makeInvisible();
-                Thread.sleep(100);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            // Delay in milliseconds (e.g., 1000 milliseconds = 1 second)
-            long delayInMillis = 1000;
-
-            // Number of iterations in the loop
-            int iterations = 10;
-
-            for (int i = 0; i < iterations; i++) {
-                // Perform your loop logic here
-                System.out.println(i);
-                // Pause the loop for the specified delay
-                Thread.sleep(delayInMillis);
-            }
-        } catch (InterruptedException e) {
-            // Handle any exceptions that may occur
-            e.printStackTrace();
-        }
-        //explode(tail.getPosX(), tail.getPosY());
-        imageSnakeTail.setVisibility(View.INVISIBLE);
-*/
         this.finish();
-    }
-
-    private void explode(float posX, float posY) {
-        // pour avoir la taille en dp
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int dp = 50; // Taille en dp
-        int pixels = (int) (dp * displayMetrics.density);
-        int explosionDuration = 5;
-
-        // modifications des dimensions
-        ImageView explosionImage = new ImageView(this);
-        explosionImage.setImageResource(R.drawable.apple);
-        explosionImage.setAdjustViewBounds(true);
-        explosionImage.setMaxHeight(pixels);
-        explosionImage.setMaxWidth(pixels);
-        explosionImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-        explosionImage.setX(posX);
-        explosionImage.setY(posY);
-
-        for (int i = 500; i > 0; i--) {
-            // attendre un peu
-        }
-
-        explosionImage.setVisibility(View.INVISIBLE);
-
     }
 
     /**
@@ -344,8 +273,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void eatApple() {
         // pour avoir la taille en dp
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int dp = 50; // Taille en dp
-        int pixels = (int) (dp * displayMetrics.density);
+        final int DP = 50; // Taille en dp
+        int pixels = (int) (DP * displayMetrics.density);
 
         // modifications des dimensions
         ImageView newSegmentImage = new ImageView(this);
