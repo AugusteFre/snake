@@ -1,6 +1,9 @@
 package com.example.snake;
 
+import android.view.View;
 import android.widget.ImageView;
+
+import kotlin.reflect.KVisibility;
 
 public class snakeBody {
     private ImageView imageSnakeBody;
@@ -104,6 +107,14 @@ public class snakeBody {
      */
     public void setPreviousRotationAngle(float previousRotationAngle) {
         this.previousRotationAngle = previousRotationAngle;
+    }
+
+
+    /**
+     * Rend le corps invisible (utilisé pour la mort)
+     */
+    public void makeInvisible() {
+        this.imageSnakeBody.setVisibility(View.INVISIBLE);
     }
 
 }
